@@ -1,0 +1,21 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Password Generator</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,sans-serif;background:linear-gradient(135deg,#0d1117,#161b22);color:#c9d1d9;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.card{background:#161b22;border:1px solid #30363d;border-radius:16px;padding:40px;max-width:450px;width:100%}h1{text-align:center;margin-bottom:25px;color:#58a6ff}
+.output{background:#0d1117;padding:15px 20px;border-radius:8px;font-family:monospace;font-size:1.2rem;word-break:break-all;margin-bottom:15px;min-height:50px;display:flex;align-items:center;justify-content:space-between}
+.output span{flex:1}.copy-btn{background:none;border:none;color:#58a6ff;cursor:pointer;font-size:1.2rem}
+.strength{height:6px;border-radius:3px;margin-bottom:20px;background:#21262d;overflow:hidden}.strength-bar{height:100%;transition:width .3s,background .3s}
+label{display:block;margin-bottom:12px;cursor:pointer}input[type=range]{width:100%;margin:5px 0 15px}
+.btn{width:100%;background:#238636;color:#fff;border:none;padding:12px;border-radius:8px;font-size:1rem;cursor:pointer}
+.btn:hover{background:#2ea043}.checks{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px}</style></head>
+<body><div class="card"><h1>🔐 Password Generator</h1>
+<div class="output"><span id="pw">Click Generate</span><button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pw').textContent)">📋</button></div>
+<div class="strength"><div class="strength-bar" id="bar"></div></div>
+<label>Length: <b id="len">16</b></label><input type="range" id="slider" min="8" max="64" value="16" oninput="document.getElementById('len').textContent=this.value">
+<div class="checks"><label><input type="checkbox" id="upper" checked> Uppercase</label><label><input type="checkbox" id="lower" checked> Lowercase</label>
+<label><input type="checkbox" id="nums" checked> Numbers</label><label><input type="checkbox" id="syms" checked> Symbols</label></div>
+<button class="btn" onclick="gen()">🎲 Generate</button></div>
+<script>function gen(){let c='';if($('upper').checked)c+='ABCDEFGHIJKLMNOPQRSTUVWXYZ';if($('lower').checked)c+='abcdefghijklmnopqrstuvwxyz'
+if($('nums').checked)c+='0123456789';if($('syms').checked)c+='!@#$%^&*()_+-=';if(!c)c='abcdefghijklmnopqrstuvwxyz';
+const l=+$('slider').value;let p='';for(let i=0;i<l;i++)p+=c[Math.floor(Math.random()*c.length)];
+$('pw').textContent=p;const s=Math.min(100,(l*2)+(c.length/2));$('bar').style.width=s+'%';$('bar').style.background=s>70?'#22c55e':s>40?'#eab308':'#ef4444'}
+function $(id){return document.getElementById(id)}gen()</script></body></html>
