@@ -1,21 +1,140 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Password Generator</title>
-<style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,sans-serif;background:linear-gradient(135deg,#0d1117,#161b22);color:#c9d1d9;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-.card{background:#161b22;border:1px solid #30363d;border-radius:16px;padding:40px;max-width:450px;width:100%}h1{text-align:center;margin-bottom:25px;color:#58a6ff}
-.output{background:#0d1117;padding:15px 20px;border-radius:8px;font-family:monospace;font-size:1.2rem;word-break:break-all;margin-bottom:15px;min-height:50px;display:flex;align-items:center;justify-content:space-between}
-.output span{flex:1}.copy-btn{background:none;border:none;color:#58a6ff;cursor:pointer;font-size:1.2rem}
-.strength{height:6px;border-radius:3px;margin-bottom:20px;background:#21262d;overflow:hidden}.strength-bar{height:100%;transition:width .3s,background .3s}
-label{display:block;margin-bottom:12px;cursor:pointer}input[type=range]{width:100%;margin:5px 0 15px}
-.btn{width:100%;background:#238636;color:#fff;border:none;padding:12px;border-radius:8px;font-size:1rem;cursor:pointer}
-.btn:hover{background:#2ea043}.checks{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px}</style></head>
-<body><div class="card"><h1>🔐 Password Generator</h1>
-<div class="output"><span id="pw">Click Generate</span><button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pw').textContent)">📋</button></div>
-<div class="strength"><div class="strength-bar" id="bar"></div></div>
-<label>Length: <b id="len">16</b></label><input type="range" id="slider" min="8" max="64" value="16" oninput="document.getElementById('len').textContent=this.value">
-<div class="checks"><label><input type="checkbox" id="upper" checked> Uppercase</label><label><input type="checkbox" id="lower" checked> Lowercase</label>
-<label><input type="checkbox" id="nums" checked> Numbers</label><label><input type="checkbox" id="syms" checked> Symbols</label></div>
-<button class="btn" onclick="gen()">🎲 Generate</button></div>
-<script>function gen(){let c='';if($('upper').checked)c+='ABCDEFGHIJKLMNOPQRSTUVWXYZ';if($('lower').checked)c+='abcdefghijklmnopqrstuvwxyz'
-if($('nums').checked)c+='0123456789';if($('syms').checked)c+='!@#$%^&*()_+-=';if(!c)c='abcdefghijklmnopqrstuvwxyz';
-const l=+$('slider').value;let p='';for(let i=0;i<l;i++)p+=c[Math.floor(Math.random()*c.length)];
-$('pw').textContent=p;const s=Math.min(100,(l*2)+(c.length/2));$('bar').style.width=s+'%';$('bar').style.background=s>70?'#22c55e':s>40?'#eab308':'#ef4444'}
-function $(id){return document.getElementById(id)}gen()</script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Password Generator | Isaac's Toolkit</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0f0f0f;--panel:#1a1a1a;--border:#2a2a2a;--text:#eaeaea;--dim:#888;--accent:#00ff9f;--glow:rgba(0,255,159,.2);--font:'JetBrains Mono',monospace;--radius:8px}
+html{font-family:var(--font);background:var(--bg);color:var(--text);font-size:15px}
+body{min-height:100vh;display:flex;flex-direction:column}
+
+.topbar{position:sticky;top:0;z-index:50;background:rgba(15,15,15,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);padding:10px 20px;display:flex;align-items:center;justify-content:space-between}
+.topbar-title{font-size:.85rem;font-weight:600}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.version{font-size:.62rem;padding:2px 7px;border-radius:4px;background:rgba(0,255,159,.08);border:1px solid rgba(0,255,159,.2);color:var(--accent)}
+.nav-link{font-size:.72rem;color:var(--dim);text-decoration:none;transition:color .2s}
+.nav-link:hover{color:var(--accent)}
+
+.container{max-width:500px;margin:0 auto;padding:32px 24px;flex:1}
+.section-tag{font-size:.65rem;color:var(--accent);text-transform:uppercase;letter-spacing:3px;margin-bottom:5px}
+.title{font-size:1.3rem;font-weight:700;margin-bottom:3px}
+.subtitle{font-size:.78rem;color:var(--dim);margin-bottom:16px}
+.line{width:28px;height:2px;background:var(--accent);margin-bottom:20px}
+
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:22px;transition:border-color .3s,box-shadow .3s}
+.panel:hover{border-color:rgba(0,255,159,.25);box-shadow:0 0 16px var(--glow)}
+
+.output{background:#0a0a0a;border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;font-size:.85rem;word-break:break-all;min-height:50px;display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.output span{flex:1;font-family:var(--font)}
+.copy-btn{background:none;border:none;color:var(--accent);cursor:pointer;font-size:1rem;margin-left:10px;transition:opacity .2s}
+.copy-btn:hover{opacity:.7}
+
+.btn{display:inline-flex;align-items:center;gap:6px;font-family:var(--font);font-size:.75rem;font-weight:500;padding:9px 16px;border-radius:var(--radius);border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer;transition:all .2s}
+.btn:hover{border-color:var(--accent);color:var(--accent);box-shadow:0 0 10px var(--glow)}
+.btn-primary{background:rgba(0,255,159,.08);border-color:rgba(0,255,159,.25);color:var(--accent)}
+.btn-group{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+
+.label{font-size:.72rem;color:var(--dim);margin-bottom:5px;display:block}
+.range{width:100%;accent-color:var(--accent)}
+.checkbox{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:.78rem}
+.checkbox input{accent-color:var(--accent);width:15px;height:15px;cursor:pointer}
+
+.strength{font-size:.72rem;padding:4px 10px;border-radius:4px;margin-bottom:14px;display:inline-block}
+.weak{background:rgba(255,95,87,.1);border:1px solid rgba(255,95,87,.3);color:#ff5f57}
+.medium{background:rgba(254,188,46,.1);border:1px solid rgba(254,188,46,.3);color:#febc2e}
+.strong{background:rgba(0,255,159,.1);border:1px solid rgba(0,255,159,.3);color:var(--accent)}
+
+.toast{position:fixed;bottom:20px;right:20px;z-index:999;background:var(--panel);border:1px solid var(--accent);border-radius:var(--radius);padding:10px 18px;font-size:.78rem;color:var(--accent);box-shadow:0 0 16px var(--glow);transform:translateY(80px);opacity:0;transition:all .3s}
+.toast.show{transform:translateY(0);opacity:1}
+
+footer{text-align:center;padding:28px 0;border-top:1px solid var(--border);font-size:.68rem;color:var(--dim)}
+@media(max-width:768px){.container{padding:20px 14px}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+<div class="topbar-title">🔐 Password Generator</div>
+<div class="topbar-right">
+<a href="https://mewmewmow.github.io/Portfolio/" class="nav-link">← Dashboard</a>
+<span class="version">v1.0.0</span>
+</div>
+</div>
+
+<div class="container">
+<div class="section-tag">Tool //</div>
+<h1 class="title">Password Generator</h1>
+<p class="subtitle">Generate secure passwords with customizable options.</p>
+<div class="line"></div>
+
+<div class="panel">
+<div class="output">
+<span id="pwOut">Click Generate</span>
+<button class="copy-btn" onclick="copyPw()">📋</button>
+</div>
+<div id="pwStrength" class="strength strong" style="display:none"></div>
+
+<div style="margin-bottom:14px">
+<label class="label">Length: <span id="lenVal">16</span></label>
+<input type="range" class="range" id="pwLen" min="8" max="64" value="16" oninput="document.getElementById('lenVal').textContent=this.value">
+</div>
+
+<div class="checkbox"><input type="checkbox" id="pwU" checked><label for="pwU">Uppercase (A-Z)</label></div>
+<div class="checkbox"><input type="checkbox" id="pwLo" checked><label for="pwLo">Lowercase (a-z)</label></div>
+<div class="checkbox"><input type="checkbox" id="pwN" checked><label for="pwN">Numbers (0-9)</label></div>
+<div class="checkbox"><input type="checkbox" id="pwS" checked><label for="pwS">Symbols (!@#$%)</label></div>
+
+<div class="btn-group">
+<button class="btn btn-primary" onclick="generate()">⚡ Generate</button>
+<button class="btn" onclick="copyPw()">📋 Copy</button>
+</div>
+</div>
+</div>
+
+<footer>
+<div class="container">Password Generator v1.0.0 · Part of Isaac's Toolkit</div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const a={c:0};try{const s=JSON.parse(localStorage.getItem('pw_a'));a.c=s.c||0}catch(e){}
+function track(n){a.c++;localStorage.setItem('pw_a',JSON.stringify(a));console.log('[analytics]',n)}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800)}
+
+function generate(){
+track('generate');
+const l=+document.getElementById('pwLen').value;
+const u=document.getElementById('pwU').checked;
+const lo=document.getElementById('pwLo').checked;
+const n=document.getElementById('pwN').checked;
+const s=document.getElementById('pwS').checked;
+let c='';
+if(u)c+='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+if(lo)c+='abcdefghijklmnopqrstuvwxyz';
+if(n)c+='0123456789';
+if(s)c+='!@#$%^&*()_+-=[]{}|;:,.<>?';
+if(!c){toast('Select at least one');return}
+let p='';for(let i=0;i<l;i++)p+=c[Math.floor(Math.random()*c.length)];
+document.getElementById('pwOut').textContent=p;
+
+const el=document.getElementById('pwStrength');
+el.style.display='inline-block';
+if(l>=16&&u&&lo&&n&&s){el.textContent='Very Strong';el.className='strength strong'}
+else if(l>=12&&u&&lo){el.textContent='Strong';el.className='strength strong'}
+else if(l>=10){el.textContent='Medium';el.className='strength medium'}
+else{el.textContent='Weak';el.className='strength weak'}
+toast('Generated');
+}
+
+function copyPw(){
+track('copy');
+const p=document.getElementById('pwOut').textContent;
+if(p!=='Click Generate'){navigator.clipboard.writeText(p);toast('Copied!')}
+}
+</script>
+</body>
+</html>
